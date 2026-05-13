@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { AnimeGridWrapper } from "./AnimeGridWrapper";
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   searchParams: Promise<{ page?: string; tag?: string }>;
 }

@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { AnimeDetail } from "@/components/anime/AnimeDetail";
 import { EpisodeList } from "@/components/anime/EpisodeList";
 
+export const dynamic = "force-dynamic";
+
 export default async function AnimeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 

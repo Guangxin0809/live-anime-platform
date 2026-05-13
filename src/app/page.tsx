@@ -2,6 +2,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { HeroSection } from "@/components/home/HeroSection";
 
+export const dynamic = "force-dynamic";
+
 interface HomeAnime {
   id: string;
   title: string;
