@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { HeroSection } from "@/components/home/HeroSection";
-
-export const dynamic = "force-dynamic";
+import { connection } from "next/server";
 
 interface HomeAnime {
   id: string;
@@ -16,6 +15,7 @@ interface HomeAnime {
 }
 
 export default async function Home() {
+  await connection();
   const animes = await prisma.anime.findMany({
     take: 10,
     orderBy: { createdAt: "desc" },

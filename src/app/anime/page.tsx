@@ -1,13 +1,13 @@
 import { prisma } from "@/lib/prisma";
 import { AnimeGridWrapper } from "./AnimeGridWrapper";
-
-export const dynamic = "force-dynamic";
+import { connection } from "next/server";
 
 interface PageProps {
   searchParams: Promise<{ page?: string; tag?: string }>;
 }
 
 export default async function AnimeListPage({ searchParams }: PageProps) {
+  await connection();
   const sp = await searchParams;
   const page = Math.max(1, parseInt(sp.page ?? "1"));
   const pageSize = 20;

@@ -2,10 +2,10 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { AnimeDetail } from "@/components/anime/AnimeDetail";
 import { EpisodeList } from "@/components/anime/EpisodeList";
-
-export const dynamic = "force-dynamic";
+import { connection } from "next/server";
 
 export default async function AnimeDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  await connection();
   const { id } = await params;
 
   const anime = await prisma.anime.findUnique({
