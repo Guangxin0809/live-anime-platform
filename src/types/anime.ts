@@ -1,0 +1,1 @@
+// TODO: Anime type definitions

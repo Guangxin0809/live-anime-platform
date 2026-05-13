@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum AnimeStatus {
+  ONGOING
+  FINISHED
+  UPCOMING
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELLED
+  REFUNDING
+  REFUNDED
+}
+
+enum PayMethod {
+  ALIPAY
+  WECHAT
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUND
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  nickname  String?
+  avatar    String?
+  phone     String?  @unique
+  role      Role     @default(USER)
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Anime {
+  id            String       @id @default(cuid())
+  title         String
+  originalTitle String?
+  cover         String?
+  description   String?      @db.Text
+  releaseYear   Int?
+  region        String?
+  status        AnimeStatus  @default(ONGOING)
+  totalEpisodes Int?
+  tags          Tag[]
+  episodes      Episode[]
+  orderItems    OrderItem[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Episode {
+  id        String   @id @default(cuid())
+  animeId   String
+  anime     Anime    @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  number    Int
+  title     String?
+  videoUrl  String?
+  duration  Int?
+  isFree    Boolean  @default(false)
+  price     Decimal? @db.Decimal(10, 2)
+  order     Int      @default(0)
+  orderItems OrderItem[]
+  createdAt DateTime @default(now())
+}
+
+model Tag {
+  id     String  @id @default(cuid())
+  name   String  @unique
+  animes Anime[]
+}
+
+model Order {
+  id        String       @id @default(cuid())
+  userId    String
+  user      User         @relation(fields: [userId], references: [id])
+  total     Decimal      @db.Decimal(10, 2)
+  status    OrderStatus  @default(PENDING)
+  items     OrderItem[]
+  payment   Payment?
+  createdAt DateTime     @default(now())
+  paidAt    DateTime?
+  updatedAt DateTime     @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  animeId   String
+  anime     Anime    @relation(fields: [animeId], references: [id])
+  episodeId String?
+  episode   Episode? @relation(fields: [episodeId], references: [id])
+  price     Decimal  @db.Decimal(10, 2)
+}
+
+model Payment {
+  id        String         @id @default(cuid())
+  orderId   String         @unique
+  order     Order          @relation(fields: [orderId], references: [id])
+  method    PayMethod
+  tradeNo   String?        @unique
+  amount    Decimal        @db.Decimal(10, 2)
+  status    PaymentStatus  @default(PENDING)
+  paidAt    DateTime?
+  rawData   Json?
+  createdAt DateTime       @default(now())
+}
